@@ -36,6 +36,7 @@ Puedes hacer clic en el botón de "Reiniciar Juego" para comenzar una nueva part
 Vinculación a Recursos Importantes
 
 Tecnologías Utilizadas:
+claude_
 HTML5 y CSS: Para estructurar y diseñar la interfaz.
 JavaScript: Para la lógica del juego, movimientos y mecánicas.
 
@@ -45,15 +46,5 @@ Implementar un sistema de niveles con diferentes fondos o dificultades.
 Integrar sonidos y música para mejorar la experiencia de juego.
 
 Recursos y Herramientas:
-MDN Web Docs (Mozilla): Documentación y recursos sobre HTML, CSS y JavaScript.
-https://developer.mozilla.org/
-Canva o Figma: Herramientas para diseñar interfaces y gráficos si decides personalizar los elementos visuales del juego.
-Google Fonts: Para personalizar las fuentes en tu proyecto.
-https://fonts.google.com/
-Enlaces para más aprendizaje:
-Curso de JavaScript en FreeCodeCamp: Aprende más sobre la programación de juegos en JavaScript.
-https://www.freecodecamp.org/
-Game Development with HTML5 Canvas: Tutoriales sobre desarrollo de juegos usando el lienzo HTML5.
-https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial
+CLAUDE: Documentación y recursos sobre HTML, CSS y JavaScript.
 
-*### Este proyecto es una excelente base para aprender sobre el desarrollo de juegos simples con HTML5, CSS3 y JavaScript, y se puede expandir fácilmente con nuevas características para enriquecer la experiencia.*
