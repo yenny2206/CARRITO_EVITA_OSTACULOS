@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Carrito</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #add8e6; /* Azul cielo */
+        }
+
+        canvas {
+            display: block;
+            margin: auto;
+            background: #228B22; /* Verde césped */
+            border: 4px solid #006400; /* Verde oscuro */
+        }
+
+        .info {
+            text-align: center;
+            font-size: 18px;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        #gameOverScreen {
+            display: none;
+            text-align: center;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #restartButton {
+            background-color: #FF4500;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #restartButton:hover {
+            background-color: #FF6347;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <span id="score">Puntaje: 0</span> | 
+        <span id="lives">Vidas: 3</span>
+    </div>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+    <div id="gameOverScreen">
+        <h1>¡Has perdido!</h1>
+        <p>Puntaje final: <span id="finalScore">0</span></p>
+        <button id="restartButton">Reiniciar Juego</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const gameWidth = canvas.width;
+        const gameHeight = canvas.height;
+
+        // Configuración del carrito
+        const car = {
+            x: gameWidth / 2 - 25,
+            y: gameHeight - 100,
+            width: 50,
+            height: 80,
+            color: "#FF4500", // Naranja brillante
+            speed: 7
+        };
+
+        // Configuración de obstáculos
+        const obstacleTypes = [
+            { color: "#8B0000", width: 40, height: 40 }, // Piedra - rojo oscuro
+            { color: "#FFD700", width: 50, height: 50 }, // Barril - dorado
+            { color: "#4B0082", width: 45, height: 45 }  // Caja - morado
+        ];
+
+        let obstacles = [];
+        let obstacleSpeed = 3;
+        let obstacleInterval = 1500;
+
+        let score = 0;
+        let lives = 3;
+
+        let gameOver = false;
+
+        function createObstacle() {
+            const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
+            const x = Math.random() * (gameWidth - type.width);
+            obstacles.push({ x, y: 0, type });
+        }
+
+        function drawCar() {
+            ctx.fillStyle = car.color;
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+        }
+
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                const { x, y, type } = obstacle;
+                ctx.fillStyle = type.color;
+                ctx.fillRect(x, y, type.width, type.height);
+            });
+        }
+
+        function moveObstacles() {
+            obstacles.forEach(obstacle => {
+                obstacle.y += obstacleSpeed;
+            });
+
+            obstacles = obstacles.filter(obstacle => obstacle.y < gameHeight);
+        }
+
+        function checkCollision() {
+            obstacles.forEach(obstacle => {
+                const { x, y, type } = obstacle;
+                if (
+                    car.x < x + type.width &&
+                    car.x + car.width > x &&
+                    car.y < y + type.height &&
+                    car.y + car.height > y
+                ) {
+                    lives--;
+                    document.getElementById("lives").textContent = `Vidas: ${lives}`;
+                    obstacles.splice(obstacles.indexOf(obstacle), 1);
+
+                    if (lives <= 0) {
+                        endGame();
+                    }
+                }
+            });
+        }
+
+        function updateScore() {
+            if (!gameOver) {
+                score++;
+                document.getElementById("score").textContent = `Puntaje: ${score}`;
+
+                // Incrementar velocidad cada 10 puntos
+                if (score % 10 === 0) {
+                    obstacleSpeed += 0.5;
+                    if (obstacleInterval > 600) {
+                        obstacleInterval -= 100;
+                    }
+                }
+            }
+        }
+
+        function endGame() {
+            gameOver = true;
+            document.getElementById("finalScore").textContent = score;
+            document.getElementById("gameOverScreen").style.display = "block";
+        }
+
+        function restartGame() {
+            gameOver = false;
+            lives = 3;
+            score = 0;
+            obstacles = [];
+            obstacleSpeed = 3;
+            obstacleInterval = 1500;
+
+            document.getElementById("score").textContent = `Puntaje: ${score}`;
+            document.getElementById("lives").textContent = `Vidas: ${lives}`;
+            document.getElementById("gameOverScreen").style.display = "none";
+
+            startObstacleGeneration();
+            update();
+        }
+
+        function update() {
+            if (gameOver) return;
+
+            ctx.clearRect(0, 0, gameWidth, gameHeight);
+
+            drawCar();
+            drawObstacles();
+            moveObstacles();
+            checkCollision();
+
+            requestAnimationFrame(update);
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === "ArrowLeft" && car.x > 0) {
+                car.x -= car.speed;
+            }
+            if (event.key === "ArrowRight" && car.x + car.width < gameWidth) {
+                car.x += car.speed;
+            }
+        }
+
+        function startObstacleGeneration() {
+            createObstacle();
+            setTimeout(() => {
+                if (!gameOver) startObstacleGeneration();
+            }, obstacleInterval);
+        }
+
+        document.addEventListener("keydown", handleKeyDown);
+        document.getElementById("restartButton").addEventListener("click", restartGame);
+
+        setInterval(updateScore, 1000);
+        startObstacleGeneration();
+        update();
+    </script>
+</body>
+</html>
